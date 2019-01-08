@@ -1,0 +1,3 @@
+random_delay: 3.005秒
+random_delay: 5.005秒
+random_delay: 3.003秒
