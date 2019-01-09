@@ -1,0 +1,1 @@
+print('What a cool function!')
