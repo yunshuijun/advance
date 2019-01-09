@@ -40,7 +40,7 @@ def add_money(account):
     while True:
         money = randint(5, 10)
         account.deposit(money)
-        print(threading.current_thread().name, 
+        print(threading.current_thread().name,
               ':', money, '====>', account.balance)
         sleep(0.5)
 
@@ -49,7 +49,7 @@ def sub_money(account):
     while True:
         money = randint(10, 30)
         account.withdraw(money)
-        print(threading.current_thread().name, 
+        print(threading.current_thread().name,
               ':', money, '<====', account.balance)
         sleep(1)
 

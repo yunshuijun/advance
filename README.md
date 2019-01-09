@@ -431,7 +431,7 @@
    - 高阶函数的用法（`filter`、`map`以及它们的替代品）
 
      ```Python
-     items1 = list(map(lambda x: x ** 2, filter(lambda x: x % 2, [1, 2, 3, 4, 5, 6, 7, 8, 9])))
+     items1 = list(map(lambda x: x ** 2, filter(lambda x: x % 2, range(1, 10))))
      items2 = [x ** 2 for x in range(1, 10) if x % 2]
      ```
 
@@ -498,7 +498,7 @@
      from time import time
      
      
-     class Record(object):
+     class Record():
          """自定义装饰器类(通过__call__魔术方法使得对象可以当成函数调用)"""
      
          def __init__(self, output):
@@ -538,7 +538,7 @@
      
      
      @singleton
-     class President(object):
+     class President():
          """总统(单例类)"""
          pass
      ```
@@ -582,12 +582,7 @@
          """员工(抽象类)"""
      
          def __init__(self, name):
-             self._name = name
-     
-         @property
-         def name(self):
-             """姓名"""
-             return self._name
+             self.name = name
      
          @abstractmethod
          def get_salary(self):
@@ -605,18 +600,9 @@
      class Programmer(Employee):
          """程序员"""
      
-         def __init__(self, name):
-             self._working_hour = 0
+         def __init__(self, name, working_hour=0):
+             self.working_hour = working_hour
              super().__init__(name)
-     
-         @property
-         def working_hour(self):
-             """工作时间"""
-             return self._working_hour
-     
-         @working_hour.setter
-         def working_hour(self, hour):
-             self._working_hour = hour if hour > 0 else 0
      
          def get_salary(self):
              return 200.0 * self.working_hour
@@ -625,17 +611,9 @@
      class Salesman(Employee):
          """销售员"""
      
-         def __init__(self, name):
-             self._sales = 0.0
+         def __init__(self, name, sales=0.0):
+             self.sales = sales
              super().__init__(name)
-     
-         @property
-         def sales(self):
-             return self._sales
-     
-         @sales.setter
-         def sales(self, sales):
-             self._sales = sales if sales > 0 else 0
      
          def get_salary(self):
              return 1800.0 + self.sales * 0.05
@@ -645,31 +623,28 @@
          """创建员工的工厂（工厂模式 - 通过工厂实现对象使用者和对象之间的解耦合）"""
      
          @staticmethod
-         def create(emp_type, *args):
+         def create(emp_type, *args, **kwargs):
              """创建员工"""
              emp_type = emp_type.upper()
              emp = None
              if emp_type == 'M':
-                 emp = Manager(*args)
+                 emp = Manager(*args, **kwargs)
              elif emp_type == 'P':
-                 emp = Programmer(*args)
+                 emp = Programmer(*args, **kwargs)
              elif emp_type == 'S':
-                 emp = Salesman(*args)
+                 emp = Salesman(*args, **kwargs)
              return emp
      
      
      def main():
          """主函数"""
          emps = [
-             EmployeeFactory.create('M', '曹操'), EmployeeFactory.create('P', '荀彧'),
-             EmployeeFactory.create('P', '郭嘉'), EmployeeFactory.create('S', '典韦')
+             EmployeeFactory.create('M', '曹操'), 
+             EmployeeFactory.create('P', '荀彧', 120),
+             EmployeeFactory.create('P', '郭嘉', 85), 
+             EmployeeFactory.create('S', '典韦', 123000),
          ]
          for emp in emps:
-             # 用isinstance函数识别对象引用所引用对象的类型
-             if isinstance(emp, Programmer):
-                 emp.working_hour = int(input('本月工作时间: '))
-             elif isinstance(emp, Salesman):
-                 emp.sales = float(input('本月销售额: '))
              print('%s: %.2f元' % (emp.name, emp.get_salary()))
      
      
@@ -704,7 +679,7 @@
              return self.value < other.value
      
      
-     class Card(object):
+     class Card():
          """牌"""
      
          def __init__(self, suite, face):
@@ -725,7 +700,7 @@
              return self.show()
      
      
-     class Poker(object):
+     class Poker():
          """扑克"""
      
          def __init__(self):
@@ -750,7 +725,7 @@
              return self.index < len(self.cards)
      
      
-     class Player(object):
+     class Player():
          """玩家"""
      
          def __init__(self, name):
@@ -860,7 +835,7 @@
      例子：自定义字典限制只有在指定的key不存在时才能在字典中设置键值对。
 
      ```Python
-     class SetOnceMappingMixin:
+     class SetOnceMappingMixin():
          """自定义混入类"""
          __slots__ = ()
      
@@ -910,24 +885,7 @@
      
      class President(metaclass=SingletonMeta):
          """总统(单例类)"""
-         
-         def __init__(self, name, country):
-             self.name = name
-             self.country = country
-     
-         def __str__(self):
-             return f'{self.country}: {self.name}'
-     
-     
-     def main():
-         p1 = President('特朗普', '美国')
-         p2 = President('奥巴马', '美国')
-         print(p1 == p2)
-         print(p1, p2, sep='\n')
-     
-     
-     if __name__ == '__main__':
-         main()
+         pass
      ```
 
    - 面向对象设计原则
@@ -989,11 +947,6 @@
    - 两种创建生成器的方式（生成器表达式和`yield`关键字）
 
      ```Python
-     """
-     生成器和迭代器
-     """
-        
-        
      def fib(num):
          """生成器"""
          a, b = 0, 1
@@ -1101,11 +1054,6 @@
                  self.balance = new_balance
      
      
-     def add_money(account, money):
-         """向指定账户打钱"""
-         account.deposit(money)
-     
-     
      class AddMoneyThread(threading.Thread):
          """自定义线程类"""
      
@@ -1128,19 +1076,90 @@
          for _ in range(100):
              # 创建线程的第1种方式
              # threading.Thread(
-             #     target=add_money, args=(account, 1)
+             #     target=account.deposit, args=(1, )
              # ).start()
              # 创建线程的第2种方式
              # AddMoneyThread(account, 1).start()
              # 创建线程的第3种方式
              # 调用线程池中的线程来执行特定的任务
-             future = pool.submit(add_money, account, 1)
+             future = pool.submit(account.deposit, 1)
              futures.append(future)
          # 关闭线程池
          pool.shutdown()
          for future in futures:
              future.result()
          print(account.balance)
+     
+     
+     if __name__ == '__main__':
+         main()
+     ```
+
+     修改上面的程序，启动5个线程向账户中存钱，5个线程从账户中取钱，取钱时如果余额不足就暂停线程进行等待。为了达到上述目标，需要对存钱和取钱的线程进行调度，在余额不足时取钱的线程暂停并释放锁，而存钱的线程将钱存入后要通知取钱的线程，使其从暂停状态被唤醒。可以使用`threading`模块的Condition来实现线程调度，该对象也是基于锁来创建的，代码如下所示：
+
+     ```Python
+     """
+     多个线程竞争一个资源 - 保护临界资源 - 锁（Lock/RLock）
+     多个线程竞争多个资源（线程数>资源数） - 信号量（Semaphore）
+     多个线程的调度 - 暂停线程执行/唤醒等待中的线程 - Condition
+     """
+     from concurrent.futures import ThreadPoolExecutor
+     from random import randint
+     from time import sleep
+     
+     import threading
+     
+     
+     class Account():
+         """银行账户"""
+     
+         def __init__(self, balance=0):
+             self.balance = balance
+             lock = threading.Lock()
+             self.condition = threading.Condition(lock)
+     
+         def withdraw(self, money):
+             """取钱"""
+             with self.condition:
+                 while money > self.balance:
+                     self.condition.wait()
+                 new_balance = self.balance - money
+                 sleep(0.001)
+                 self.balance = new_balance
+     
+         def deposit(self, money):
+             """存钱"""
+             with self.condition:
+                 new_balance = self.balance + money
+                 sleep(0.001)
+                 self.balance = new_balance
+                 self.condition.notify_all()
+     
+     
+     def add_money(account):
+         while True:
+             money = randint(5, 10)
+             account.deposit(money)
+             print(threading.current_thread().name, 
+                   ':', money, '====>', account.balance)
+             sleep(0.5)
+     
+     
+     def sub_money(account):
+         while True:
+             money = randint(10, 30)
+             account.withdraw(money)
+             print(threading.current_thread().name, 
+                   ':', money, '<====', account.balance)
+             sleep(1)
+     
+     
+     def main():
+         account = Account()
+         with ThreadPoolExecutor(max_workers=10) as pool:
+             for _ in range(5):
+                 pool.submit(add_money, account)
+                 pool.submit(sub_money, account)
      
      
      if __name__ == '__main__':
@@ -1266,7 +1285,38 @@
 
      > 说明：上面的代码使用`get_event_loop`函数获得系统默认的事件循环，通过`gather`函数可以获得一个`future`对象，`future`对象的`add_done_callback`可以添加执行完成时的回调函数，`loop`对象的`run_until_complete`方法可以等待通过`future`对象获得协程执行结果。
 
+     Python中有一个名为`aiohttp`的三方库，它提供了异步的HTTP客户端和服务器，这个三方库可以跟`asyncio`模块一起工作，并提供了对`Future`对象的支持。Python 3.6中引入了async和await来定义异步执行的函数以及创建异步上下文，在Python 3.7中它们正式成为了关键字。下面的代码异步的从5个URL中获取页面并通过正则表达式的命名捕获组提取了网站的标题。
 
+     ```Python
+     import asyncio
+     import re
+     
+     import aiohttp
+     
+     
+     async def fetch(session, url):
+         async with session.get(url, ssl=False) as resp:
+             return await resp.text()
+     
+     
+     async def main():
+         pattern = re.compile(r'\<title\>(?P<title>.*)\<\/title\>')
+         urls = ('https://www.python.org/',
+                 'https://git-scm.com/',
+                 'https://www.jd.com/',
+                 'https://www.taobao.com/',
+                 'https://www.douban.com/')
+         async with aiohttp.ClientSession() as session:
+             for url in urls:
+                 html = await fetch(session, url)
+                 print(pattern.search(html).group('title'))
+     
+     
+     if __name__ == '__main__':
+         loop = asyncio.get_event_loop()
+         loop.run_until_complete(main())
+         loop.close()
+     ```
 
 ### 第03天：团队开发和项目选题
 
@@ -1325,9 +1375,9 @@
 1. 选题范围设定
 
    - CMS（用户端）：新闻聚合网站、问答/分享社区、影评/书评网站等。
-   - MIS（用户端+管理端）：KMS、KPI考核系统、HRS、仓储管理系统等。
+   - MIS（用户端+管理端）：KMS、KPI考核系统、HRS、CRM系统、供应链系统、仓储管理系统等。
 
-   - App后台（管理端+数据接口）：二手交易类App、报刊杂志类App、健康健美类App、旅游类App、社交类App、阅读类App等。
+   - App后台（管理端+数据接口）：二手交易类、报刊杂志类、小众电商类、新闻资讯类、旅游类、社交类、阅读类等。
    - 其他类型：自身行业背景和工作经验、业务容易理解和把控。
 
 2. 需求理解、模块划分和任务分配
@@ -1384,7 +1434,7 @@
 4. Django的使用技巧（Debug-Tool-Bar）
 5. 好用的Python模块（日期计算、图像处理、数据加密、三方API）
 
-### REST API设计
+#### REST API设计
 
 1. RESTful架构
    - [理解RESTful架构](http://www.ruanyifeng.com/blog/2011/09/restful.html)
